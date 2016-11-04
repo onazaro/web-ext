@@ -293,6 +293,64 @@ describe('build', () => {
     }
   ));
 
+//-----------------------------------------------------------
+  it('throws an error if destination exists', () => {
+  // Build minimal-web-extension
+  // Build minimal-web-extension again
+  // Check for error
+    withTempDir(
+      (tmpDir) => {
+//        debugger;
+        log.info('---'+tmpDir.path());
+        var t = tmpDir.path();
+        return build({
+          sourceDir: fixturePath('minimal-web-ext'),
+          artifactsDir: tmpDir.path(),
+        })
+          .then((buildResult) => {
+            debugger;
+            // Make sure we still have a build result.
+            assert.match(buildResult.extensionPath, /\.zip$/);
+            return buildResult;
+          })
+          .then(() => {
+            debugger;
+            log.info('+++'+tmpDir.path());
+            return build({
+              sourceDir: fixturePath('minimal-web-ext'),
+              artifactsDir: tmpDir.path(),
+            })
+              .then(makeSureItFails())
+              .catch((error) => {
+                debugger;
+                log.info(error);
+                assert.instanceOf(error, UsageError);
+                assert.include(
+                  error.message,
+//                  'Extension exists at the destination path');
+                  'bla-bla-bla');
+                debugger;
+              });
+          });
+      }
+    );
+  });
+
+  it('overwrites destination with --overwrite-dest option', () => {
+  // Build minimal-web-extension
+  // Copy destination
+  // Build minimal-web-extension 3.0
+  // Check: two builds are not the same
+  });
+
+  it('crashes if destination exists and it is not a file', () => {
+  // Create directory with destination name
+  // Try to build minimal-web-extension
+  // Check for error
+  });
+
+//-----------------------------------------------------------
+
   describe('safeFileName', () => {
 
     it('makes names safe for writing to a file system', () => {
